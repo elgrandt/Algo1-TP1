@@ -12,6 +12,9 @@
 \materia{Algoritmos y Estructuras de Datos I}
 \grupo{Grupo "Los Negros"}
 \newcommand{\senial}{\textit{se\~nal}}
+\newcommand{\amplitud}{\textit{amplitud}}
+\newcommand{\tiempo}{\textit{tiempo}}
+\newcommand{\intervalo}{\textit{intervalo}}
 
 % Pongan cuantos integrantes quieran
 \integrante{Tasat, Dylan}{29/17}{dylantasat11@gmail.com}
@@ -22,10 +25,23 @@
 \maketitle
 
 \section{Problemas}
-\begin{proc}{grabaci\'onV\'alida}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, out result}{}
-    \pre{\True}
-    \post{\True}
-    \aux{Aux}{i: \ent}{\bool}{\True}
+\begin{proc}{grabaci\'onV\'alida}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, out result: $\bool$}{}
+	\pre{\True}
+	\post{\True}
+	\aux{Aux}{i: \ent}{\bool}{\True}
+\end{proc}
+
+\begin{proc}{silencios}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, in umbral: $\amplitud$, out tiempos: \TLista{\intervalo}}{}
+	\pre{
+		\textit{
+			grabaci\'onV\'alida(s, prof, freq)
+		}
+	}
+	\post{
+		\textit{
+			($\forall$ i,j: $\ent$)
+		}
+	}
 \end{proc}
 
 \section{Predicados y Auxiliares generales}
