@@ -34,16 +34,22 @@
 \begin{proc}{silencios}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, in umbral: $\amplitud$, out tiempos: \TLista{\intervalo}}{}
 	\pre{
 		\textit{
-			grabaci\'onV\'alida(s, prof, freq)
+			esV\'alida(s, prof, freq)
 		}
 	}
-	\post{
+	\post{ 
+		\\
 		\textit{
 			($\forall$ i,j: $\ent$) ( (0 $\leq$ i $\textless$ j + 0.1 * freq $\textless$ $\mid$s$\mid$) $\yLuego$ todosBajosEntre(s, i, j, umbral) ) $\Iff$ estaDentro(tiempos, i, j))
 		}
+		\\
 	}
-	\pred{test}{in test:}{
-		hola
+	\pred{todosBajosEntre}{s: $\senial$, a: $\ent$, b: $\ent$, umbral: $\amplitud$}{
+		\\
+		\textit{
+			($\forall$ i:$\ent$) ( (a $\leq$ i $\textless$ b) $\implicaLuego$ (abs(s[i]) $\textless$ umbral) )
+		}
+		\\
 	}
 \end{proc}
 
