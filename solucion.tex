@@ -29,9 +29,6 @@
 \begin{proc}{ardillizar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq: $\ent$}{}
 	\pre{se\tilde{n}alEsValida(m, prof, freq) \land m = m_0}
 	\post{se\tilde{n}alEsValida(m, prof, freq) \land contieneMuestrasCorrectas(m, m_0)\land largoDeSe\tilde{n}alCorrecto(m, m_0)}
-	\pred{se\~nalEsValida}{m: \TLista{$\senial$}, prof: $\ent$, freq: $\ent$}{
-		(\forall s: $\senial$)(s \in m)$\implica$(validarSe\tilde{n}al(s, prof, freq))
-	}
 	\pred{contieneMuestrasCorrectas}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
 		\newline
 		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(validarMuestras(m[i], n[i]))\newline
@@ -82,9 +79,11 @@
 	
 \end{proc}
 
-
-
 \section{Predicados y Auxiliares generales}
+
+\pred{se\~nalEsValida}{m: \TLista{$\senial$}, prof: $\ent$, freq: $\ent$}{
+	(\forall s: $\senial$)(s \in m)$\implica$(validarSe\tilde{n}al(s, prof, freq))
+}
 
 \pred{validarSe\~nal}{s: $\senial$, prof: $\ent$, freq: $\ent$}{
 	\newline
