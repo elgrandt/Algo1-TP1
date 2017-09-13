@@ -41,6 +41,24 @@
 	}
 \end{proc}
 
+\begin{proc}{flashElPerezoso}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq: $\ent$}{}
+	\pre{se\tilde{n}alEsValida(m, prof, freq) \land m = m_0}
+	\post{tieneLongitudCorrecta(m, m_0) \land tieneMuestrasCorrectas(m, m_0)}
+	\pred{tieneLongitudCorrecta}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
+		\newline
+		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(|m[i]|=|n[i]|+(|n[i]|-1))
+	}
+	\pred{tieneMuestrasCorrectas}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
+		\newline
+		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(validarMuestras(m[i], n[i]))
+	}
+	\pred{validarMuestras}{s: $\senial$, or: $\senial$}{
+		\newline
+		((\forall i: $\ent$)(0 \leq i < |or|)\implicaLuego(or[i] = s[i*2])) \newline
+		\land ((\forall i: $\ent$)(0 \leq i < |or|-1)\implicaLuego(s[i*2+1] = \frac{or[i]+or[i+1]}{2}))
+	}
+\end{proc}
+
 \begin{proc}{grabaci\'onV\'alida}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, out result: $\bool$}{}
 	\pre{\True}
 	\post{\True}
