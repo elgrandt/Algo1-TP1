@@ -10,17 +10,17 @@
 \subtitulo{La sala de reuniones}
 \fecha{...}
 \materia{Algoritmos y Estructuras de Datos I}
-\grupo{Grupo "Los Negros"}
+\grupo{Grupo "Los Negros" (6)}
 \newcommand{\senial}{\textit{se\~nal}}
 \newcommand{\amplitud}{\textit{amplitud}}
 \newcommand{\tiempo}{\textit{tiempo}}
 \newcommand{\intervalo}{\textit{intervalo}}
 
 % Pongan cuantos integrantes quieran
-\integrante{Tasat, Dylan}{29/17}{dylantasat11@gmail.com}
+\integrante{Tasat, Dylan}{029/17}{dylantasat11@gmail.com}
 \integrante{Springhart, Gonzalo}{308/17}{glspringhart@gmail.com}
-%\integrante{Apellido, Nombre3}{003/01}{email3@dominio.com}
-%\integrante{Apellido, Nombre4}{004/01}{email4@dominio.com}
+\integrante{Buceta, Diego}{001/17}{diegobuceta35@gmail.com}
+\integrante{Filloy, Lisandro}{561/17}{lisandrofilloy@gmail.com}
 
 \maketitle
 
@@ -32,26 +32,38 @@
 \end{proc}
 
 \begin{proc}{silencios}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, in umbral: $\amplitud$, out tiempos: \TLista{\intervalo}}{}
-	\pre{
-		\textit{
-			esV\'alida(s, prof, freq)
-		}
+	\pre{grabacionValidaV(s,prof,freq) \land umbral > 0}
+	
+	\post{(\forall i: $\ent$) (0 \leq i < (j + (0.1 * freq)) < |s|) \land (todosBajosEntre(i,j,s,umbral) \Leftrightarrow estaDentro(tiempos,i,j))
 	}
-	\post{ 
-		\\
-		\textit{
-			($\forall$ i,j: $\ent$) ( (0 $\leq$ i $\textless$ j + 0.1 * freq $\textless$ $\mid$s$\mid$) $\yLuego$ todosBajosEntre(s, i, j, umbral) ) $\Iff$ estaDentro(tiempos, i, j))
-		}
-		\\
+	\pred {todosBajosEntre} {s: $\senial$, a: $\ent$, b : $\ent$, umbral : $\amplitud$}{
+	\newline
+	(\forall i : $\ent$) \implica_L (|s[i]| < umbral) 
 	}
-	\pred{todosBajosEntre}{s: $\senial$, a: $\ent$, b: $\ent$, umbral: $\amplitud$}{
-		\\
-		\textit{
-			($\forall$ i:$\ent$) ( (a $\leq$ i $\textless$ b) $\implicaLuego$ (abs(s[i]) $\textless$ umbral) )
-		}
-		\\
-	}
+	\pred {estaDentro}{tiempo : $\tiempo$, a : $\ent$, b : $\ent$}{
+	\newline
+	(\exists i : $\ent$) (0 \leq i < tiempo) \land_L ((a \geq tiempo[i]_0) \land (tiempo[i]_1 \geq b))	
+	}	
+	
 \end{proc}
+
+
+\begin{proc}{hayQuilombo}{in m : \TLista{$\senial$}, in prof:$\ent$, in freq : $\ent$, in umbral : $\amplitud$, out result : Bool}
+
+	\pre{grabacionValidaM(m,prof,freq) \land umbral > 0 \land |m| > 0}
+	\post{(\exists i : $\ent$)((0 \leq i < |m[0]|) \land_L cantHablantes(prof,freq,umbral,i) > 1 )}
+	
+	\aux{cantHablantes}{m :  \TLista{$\senial$}, prof : $\ent$, freq : $\ent$, umbral : $\amplitud$, instante : $\ent$}{res : $\ent$}{
+	\sum_{i=0}^{|m|-1} estaHablando(m[i], instante, freq,umbral)
+	}
+	\aux{estaHablando}{s: $\senial$, freq:$\ent$, umbral : $\amplitud$}{res : $\ent$} {
+	\newline
+		ifThenElseFi( (\exists i : $\ent$)(\exists j : $\ent$) (0 \leq i \leq instante \leq j < |s|) \land (j-i \geq 0.1*freq) \land todosBajosEntre(s,u,j,umbral),0,1)
+	}
+	
+\end{proc}
+
+
 
 \section{Predicados y Auxiliares generales}
 
