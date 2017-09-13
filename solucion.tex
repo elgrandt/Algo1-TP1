@@ -25,6 +25,25 @@
 \maketitle
 
 \section{Problemas}
+
+\begin{proc}{ardillizar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq: $\ent$}{}
+	\pre{se\tilde{n}alEsValida(m, prof, freq) \land m = m_0}
+	\post{se\tilde{n}alEsValida(m, prof, freq) \land contieneMuestrasCorrectas(m, m_0)\land largoDeSe\tilde{n}alCorrecto(m, m_0)}
+	\pred{se\~nalEsValida}{m: \TLista{$\senial$}, prof: $\ent$, freq: $\ent$}{
+		(\forall s: $\senial$)(s \in m)$\implica$(validarSe\tilde{n}al(s, prof, freq))
+	}
+	\pred{contieneMuestrasCorrectas}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
+		\newline
+		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(validarMuestras(m[i], n[i]))\newline
+	}
+	\pred{validarMuestras}{s: $\senial$, so: $\senial$}{
+		(\forall i: $\ent$)(0 \leq i < \frac{|so|}{2})\implicaLuego(s[i]=so[i*2])
+	}
+	\pred{largoDeSe\~nalCorrecto}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
+		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(|m[i]| = \frac{|n[i]|}{2})
+	}
+\end{proc}
+
 \begin{proc}{grabaci\'onV\'alida}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, out result: $\bool$}{}
 	\pre{\True}
 	\post{\True}
@@ -54,6 +73,38 @@
 \end{proc}
 
 \section{Predicados y Auxiliares generales}
+
+\pred{validarSe\~nal}{s: $\senial$, prof: $\ent$, freq: $\ent$}{
+	\newline
+	profundidadCorrecta(prof) \newline
+	\land frecuenciaCorrecta(freq) \newline
+	\land duracionDeSe\tilde{n}alCorrecta(s, freq) \newline
+	\land amplitudesDentroDelRango(s, prof) \newline
+	\land microfonoFunciona(s, freq) \newline
+}
+
+\pred{profundidadCorrecta}{prof: $\ent$}{
+	(prof = 16)\lor(prof = 32)
+}
+	
+\pred{frecuenciaCorrecta}{freq: $\ent$}{
+	(freq = 44100)\lor(freq = 48000)
+}
+
+\pred{duracionDeSe\~nalCorrecta}{s: $\senial$, freq: $\ent$}{
+	(|s| > 10 * freq)
+}
+
+\pred{amplitudesDentroDelRango}{s: $\senial$, prof: $\ent$}{
+	\newline
+	(\forall amp: $\ent$)(amp \in s)$\implica$(-2^{(prof-1)} \leq amp < (2^{(prof-1)})-1 ) \newline
+}
+
+\pred{microfonoFunciona}{s: $\senial$, freq: $\ent$}{
+	\newline
+	\lnot((\exists i: $\ent$)(\exists j: $\ent$)((0 \leq i < j \leq |s|) \land_L ((|subseq(s, i, j)| \geq freq)\newline
+	\land (\forall k: $\ent$)(k \in subseq(s, i, j)$\implica$(k=0))))\newline
+}
 
 \section{Decisiones tomadas}
 
