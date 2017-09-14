@@ -17,14 +17,81 @@
 \newcommand{\intervalo}{\textit{intervalo}}
 
 % Pongan cuantos integrantes quieran
-\integrante{Tasat, Dylan}{029/17}{dylantasat11@gmail.com}
-\integrante{Springhart, Gonzalo}{308/17}{glspringhart@gmail.com}
 \integrante{Buceta, Diego}{001/17}{diegobuceta35@gmail.com}
 \integrante{Filloy, Lisandro}{561/17}{lisandrofilloy@gmail.com}
+\integrante{Springhart, Gonzalo}{308/17}{glspringhart@gmail.com}
+\integrante{Tasat, Dylan}{029/17}{dylantasat11@gmail.com}
 
 \maketitle
 
 \section{Problemas}
+
+\begin{proc}{reacomodar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq $\ent$}{}
+	\pre{(m = m_0 \land esMatriz(m) \land esGrabacionValida(m, freq, prof)) } 
+	
+	\post{( (\forall i:$\ent$) (0 \leq i < |m_0| - 1 \implica_L (calcIntensidadMedia(m[i]) \leq calcIntensidadMedia(m[i+1])) ) ) \land \newline (esMatriz(m) \land esGrabacionValida(m, freq, prof) \land igualApariciones(m, m_0))}
+	\aux{calcIntensidadMedia}{in s: $\senial$, in prof : \ent}{\ent}{\sum_{i=0}^{|s|-1}{\frac{vAbs(s[i])}{|s|-1}}}
+	\aux{vAbs}{in valor:\ent}{\ent} {IfThenElseFi(valor <0,valor,-valor)}
+	\pred{esGrabacionValida}{m: \TLista{$\senial$}, freq : $\ent$, prof : $\ent$}{
+	\newline
+	enRango(m, prof) \land duracionMayorA10(m, freq) \land micFunciona(m, freq) \land profValida(prof) \land freqValida(freq)
+	}
+	\pred {esMatriz}{m:\TLista{$\senial$}, prof:$\ent$}{
+	\newline		
+		((\forall i:$\ent$)(\forall j:$\ent$)(0 \leq i < |m| \implica_L |m[i]| = m[j]))
+	}
+	\pred {enRango}{m: \TLista{$\senial$}, prof:$\ent$}{
+	\newline	
+		(\forall i:$\ent$)(\forall j:$\ent$)(0 \leq i < |m| \land_L 0 \leq j < |m[i]|) \implica_L (-2^{(prof-1)} \leq m[i][j] < (2^{(prof-1)})-1)
+	}
+
+	\pred {duracionMayorA10}{m:\TLista{$\senial$}, freq:$\ent$}{
+	\newline
+		(\forall i:$\ent$)(0 \leq i < |m[i]| \implica_L 10*freq > |m[i]|)
+	}
+	\pred {micFunciona}{m:\TLista{$\senial$}, freq:$\ent$}{
+	\newline
+	(\forall i:$\ent$)(\nexists j:$\ent$)(0 \leq i < |m| \implica_L $\#$apariciones(subsec(m[i]),j,j+freq),0) = freq
+	}
+	\pred{profValida}{prof: $\ent$}{
+		(prof = 16)\lor(prof = 32)
+	}
+	\pred{freqValida}{freq: $\ent$}{
+		(freq = 44100)\lor(freq = 48000)
+	}
+	\pred{igualApariciones}{m:\TLista{$\senial$}, n:\TLista{$\senial$}}{
+	\newline
+		(\forall i : $\ent$)(\exists j: $\ent$)(0 \leq i < |n| \implica_L n[i]=m[j])
+		}	
+\end{proc}
+
+\begin{proc}{calmateJose!}{in s:$\senial$, in umbralHulk:amplitud, in prof:$\ent$, in freq : $\ent$, out result Bool} {}
+	\pre{|s| > 0 \land grabacionCorrecta(s, prof, freq)}
+	\post{((\exists i: $\ent$)(\exists j: $\ent$)(\exists k : $\ent$)((k-i) > freq) \land (({\sum_{q=0}^{i}{\frac{s[q]}{i}}} < umbralHulk ) \land ({\sum_{q=i}^{k}{\frac{s[q]}{k-i}}} > umbralHulk) \land ({\sum_{q=j}^{|s|}{\frac{s[q]}{|s|-j}}}) < umbralHulk)) )\Leftrightarrow result = \True
+	}
+	\pred{grabacionValida}{s:$\senial$, prof:$\ent$, freq : $\ent$}{
+	\newline
+		profValida(prof) \land freqValida(freq) \land enRango(s, prof) \land duracionValida(s,freq) \land micFunciona(s,freq)	
+	}
+	\pred {enRango}{s:$\senial$, prof:$\ent$}{
+	\newline
+	(\forall i:$\ent$)(0 \leq i < |s| \implica_L (-2^{(prof-1)} \leq s[i] < 2^{(prof-1)}-1) )	
+	}
+	\pred{duracionValida}{s:$\senial$, freq:$\ent$}{
+	\newline
+	|s| > 10 * freq 	
+	}
+	\pred{micFunciona}{s:$\senial$, freq:$\ent$}{
+	\newline
+	(\nexists j : $\ent$)($\#$apariciones(subsec(s,j,j+freq+1),0) = freq)
+	}
+	\pred{profValida}{prof: $\ent$}{
+		(prof = 16)\lor(prof = 32)
+	}
+	\pred{freqValida}{freq: $\ent$}{
+		(freq = 44100)\lor(freq = 48000)
+	}
+\end{proc}
 
 \begin{proc}{ardillizar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq: $\ent$}{}
 	\pre{se\tilde{n}alEsValida(m, prof, freq) \land m = m_0}
