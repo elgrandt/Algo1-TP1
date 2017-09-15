@@ -26,90 +26,83 @@
 
 \section{Problemas}
 
-\begin{proc}{reacomodar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq $\ent$}{}
-	\pre{(m = m_0 \land esMatriz(m) \land esGrabacionValida(m, freq, prof)) } 
-	
-	\post{( (\forall i:$\ent$) (0 \leq i < |m_0| - 1 \implica_L (calcIntensidadMedia(m[i]) \leq calcIntensidadMedia(m[i+1])) ) ) \land \newline (esMatriz(m) \land esGrabacionValida(m, freq, prof) \land igualApariciones(m, m_0))}
-	\aux{calcIntensidadMedia}{in s: $\senial$, in prof : \ent}{\ent}{\sum_{i=0}^{|s|-1}{\frac{vAbs(s[i])}{|s|-1}}}
-	\aux{vAbs}{in valor:\ent}{\ent} {IfThenElseFi(valor <0,valor,-valor)}
-	\pred{esGrabacionValida}{m: \TLista{$\senial$}, freq : $\ent$, prof : $\ent$}{
-	\newline
-	enRango(m, prof) \land duracionMayorA10(m, freq) \land micFunciona(m, freq) \land profValida(prof) \land freqValida(freq)
-	}
-	\pred {esMatriz}{m:\TLista{$\senial$}, prof:$\ent$}{
-	\newline		
-		((\forall i:$\ent$)(\forall j:$\ent$)(0 \leq i < |m| \implica_L |m[i]| = m[j]))
-	}
-	\pred {enRango}{m: \TLista{$\senial$}, prof:$\ent$}{
-	\newline	
-		(\forall i:$\ent$)(\forall j:$\ent$)(0 \leq i < |m| \land_L 0 \leq j < |m[i]|) \implica_L (-2^{(prof-1)} \leq m[i][j] < (2^{(prof-1)})-1)
-	}
+\begin{proc}{grabaci\'onV\'alida}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, out result: $\bool$}{}
+    \pre{\True}
+    \post{
+    \newline
+    se\tilde{n}alEsValidaV(s, prof, freq)
+	\Leftrightarrow result = \True
+    \newline
+    }
+\end{proc}
 
-	\pred {duracionMayorA10}{m:\TLista{$\senial$}, freq:$\ent$}{
-	\newline
-		(\forall i:$\ent$)(0 \leq i < |m[i]| \implica_L 10*freq > |m[i]|)
-	}
-	\pred {micFunciona}{m:\TLista{$\senial$}, freq:$\ent$}{
-	\newline
-	(\forall i:$\ent$)(\nexists j:$\ent$)(0 \leq i < |m| \implica_L $\#$apariciones(subsec(m[i]),j,j+freq),0) = freq
-	}
-	\pred{profValida}{prof: $\ent$}{
-		(prof = 16)\lor(prof = 32)
-	}
-	\pred{freqValida}{freq: $\ent$}{
-		(freq = 44100)\lor(freq = 48000)
+\begin{proc}{elAcaparador}{in m: \TLista{$\senial$}, in prof : \ent, in freq: \ent, out persona: \ent}{}
+\pre{se\tilde{n}alEsValidaM(m, prof, freq)}
+\post{
+    \newline
+	1 \leq persona \leq |m| \newline 
+\land_L (\forall i:$\ent$) (0 \leq i < |m| \implica_L (calcIntensidadMedia(m[i]) \leq calcIntensidadMedia(m[persona-1]) 
+    \newline
+    }
+\end{proc}
+
+\begin{proc}{reacomodar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq $\ent$}{}
+	\pre{(m = m_0 \land se\tilde{n}alEsValidaM(m, freq, prof)) } 
+	
+	\post{
+	\newline	
+	( (\forall i:$\ent$) (0 \leq i < |m_0| - 1 \implica_L (calcIntensidadMedia(m[i]) \leq calcIntensidadMedia(m[i+1])) ) ) \newline \land (igualApariciones(m, m_0))
+	\newline	
 	}
 	\pred{igualApariciones}{m:\TLista{$\senial$}, n:\TLista{$\senial$}}{
 	\newline
-		(\forall i : $\ent$)(\exists j: $\ent$)(0 \leq i < |n| \implica_L n[i]=m[j])
+		(|n| = |m|) \land (\forall i : $\ent$)(\exists j: $\ent$)((0 \leq i < |n| \land 0 \leq j < |m|) \implica_L n[i]=m[j])
+		\newline
 		}	
 \end{proc}
 
 \begin{proc}{calmateJose!}{in s:$\senial$, in umbralHulk:amplitud, in prof:$\ent$, in freq : $\ent$, out result Bool} {}
-	\pre{|s| > 0 \land grabacionCorrecta(s, prof, freq)}
-	\post{((\exists i: $\ent$)(\exists j: $\ent$)(\exists k : $\ent$)((k-i) > freq) \land (({\sum_{q=0}^{i}{\frac{s[q]}{i}}} < umbralHulk ) \land ({\sum_{q=i}^{k}{\frac{s[q]}{k-i}}} > umbralHulk) \land ({\sum_{q=j}^{|s|}{\frac{s[q]}{|s|-j}}}) < umbralHulk)) )\Leftrightarrow result = \True
-	}
-	\pred{grabacionValida}{s:$\senial$, prof:$\ent$, freq : $\ent$}{
+	\pre{|s| > 0 \land umbralHulk > 0 \land se\tilde{n}alEsValidaV(s, prof, freq)}
+	\post{
+	\newline	
+	((\exists i: $\ent$)(\exists j: $\ent$)(\exists k : $\ent$)(0 \leq i < j < k < |s|) \land_L ((k-i) > freq)
+	\newline	
+	\land (calcIntensidadMedia(subseq(s,0,i)) < umbralHulk )
 	\newline
-		profValida(prof) \land freqValida(freq) \land enRango(s, prof) \land duracionValida(s,freq) \land micFunciona(s,freq)	
-	}
-	\pred {enRango}{s:$\senial$, prof:$\ent$}{
+	\land (calcIntensidadMedia(subseq(s,i,k)) \geq umbralHulk)
 	\newline
-	(\forall i:$\ent$)(0 \leq i < |s| \implica_L (-2^{(prof-1)} \leq s[i] < 2^{(prof-1)}-1) )	
-	}
-	\pred{duracionValida}{s:$\senial$, freq:$\ent$}{
-	\newline
-	|s| > 10 * freq 	
-	}
-	\pred{micFunciona}{s:$\senial$, freq:$\ent$}{
-	\newline
-	(\nexists j : $\ent$)($\#$apariciones(subsec(s,j,j+freq+1),0) = freq)
-	}
-	\pred{profValida}{prof: $\ent$}{
-		(prof = 16)\lor(prof = 32)
-	}
-	\pred{freqValida}{freq: $\ent$}{
-		(freq = 44100)\lor(freq = 48000)
+	\land (calcIntensidadMedia(subseq(s,j,|s|)) < umbralHulk) )
+	\newline	
+	\Leftrightarrow result = \True
+	\newline	
 	}
 \end{proc}
 
 \begin{proc}{ardillizar}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq: $\ent$}{}
-	\pre{se\tilde{n}alEsValida(m, prof, freq) \land m = m_0}
-	\post{se\tilde{n}alEsValida(m, prof, freq) \land contieneMuestrasCorrectas(m, m_0)\land largoDeSe\tilde{n}alCorrecto(m, m_0)}
+	\pre{se\tilde{n}alEsValidaM(m, prof, freq) \land m = m_0}
+	\post{
+	\newline
+	se\tilde{n}alEsValidaM(m, prof, freq) \land contieneMuestrasCorrectas(m, m_0)\land largoDeSe\tilde{n}alCorrecto(m, m_0)
+	\newline	
+	}
 	\pred{contieneMuestrasCorrectas}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
 		\newline
 		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(validarMuestras(m[i], n[i]))\newline
 	}
 	\pred{validarMuestras}{s: $\senial$, so: $\senial$}{
+		\newline
 		(\forall i: $\ent$)(0 \leq i < \frac{|so|}{2})\implicaLuego(s[i]=so[i*2])
+		\newline	
 	}
 	\pred{largoDeSe\~nalCorrecto}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
+		\newline		
 		(\forall i: $\ent$)(0 \leq i < |m|)\implicaLuego(|m[i]| = \frac{|n[i]|}{2})
+		\newline
 	}
 \end{proc}
 
 \begin{proc}{flashElPerezoso}{inout m: \TLista{$\senial$}, in prof: $\ent$, in freq: $\ent$}{}
-	\pre{se\tilde{n}alEsValida(m, prof, freq) \land m = m_0}
+	\pre{se\tilde{n}alEsValidaM(m, prof, freq) \land m = m_0}
 	\post{tieneLongitudCorrecta(m, m_0) \land tieneMuestrasCorrectas(m, m_0)}
 	\pred{tieneLongitudCorrecta}{m: \TLista{$\senial$}, n: \TLista{$\senial$}}{
 		\newline
@@ -126,57 +119,69 @@
 	}
 \end{proc}
 
-\begin{proc}{grabaci\'onV\'alida}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, out result: $\bool$}{}
-	\pre{\True}
-	\post{\True}
-	\aux{Aux}{i: \ent}{\bool}{\True}
-\end{proc}
 
 \begin{proc}{silencios}{in s: $\senial$, in prof : $\ent$, in freq: $\ent$, in umbral: $\amplitud$, out tiempos: \TLista{\intervalo}}{}
-	\pre{grabacionValidaV(s,prof,freq) \land umbral > 0}
+	\pre{se\tilde{n}alEsValidaV(s,prof,freq) \land umbral > 0}
 	
-	\post{(\forall i: $\ent$) (0 \leq i < (j + (0.1 * freq)) < |s|) \land (todosBajosEntre(i,j,s,umbral) \Leftrightarrow estaDentro(tiempos,i,j))
-	}
-	\pred {todosBajosEntre} {s: $\senial$, a: $\ent$, b : $\ent$, umbral : $\amplitud$}{
+	\post{
+	\newline	
+	(\forall i: $\ent$)(\forall j: $\ent$)(0 \leq i + (0.1 * freq) \leq j < |s|) \land (todosBajosEntre(s,i,j,umbral) \Leftrightarrow estaDentro(tiempos,i,j))
 	\newline
-	(\forall i : $\ent$) \implica_L (|s[i]| < umbral) 
 	}
-	\pred {estaDentro}{tiempo : $\tiempo$, a : $\ent$, b : $\ent$}{
+	\pred {estaDentro}{tiempo : \TLista{\intervalo}, a : $\ent$, b : $\ent$}{
 	\newline
-	(\exists i : $\ent$) (0 \leq i < tiempo) \land_L ((a \geq tiempo[i]_0) \land (tiempo[i]_1 \geq b))	
+	(\exists i : $\ent$) (0 \leq i < |tiempo|) \land_L ((a \geq tiempo[i]_0) \land (tiempo[i]_1 \geq b))	
 	}	
 	
 \end{proc}
 
 
-\begin{proc}{hayQuilombo}{in m : \TLista{$\senial$}, in prof:$\ent$, in freq : $\ent$, in umbral : $\amplitud$, out result : Bool}
+\begin{proc}{hayQuilombo}{in m : \TLista{$\senial$}, in prof:$\ent$, in freq : $\ent$, in umbral : $\amplitud$, out result : Bool}{}
 
-	\pre{grabacionValidaM(m,prof,freq) \land umbral > 0 \land |m| > 0}
-	\post{(\exists i : $\ent$)((0 \leq i < |m[0]|) \land_L cantHablantes(prof,freq,umbral,i) > 1 )}
+	\pre{se\tilde{n}alEsValidaM(m,prof,freq) \land umbral > 0 \land |m| > 0}
+	\post{
+	\newline	
+	(\exists i : $\ent$)((0 \leq i < |m[0]|) \land_L cantHablantes(m,prof,freq,umbral,i) > 1 )
+	\newline	
+	}
 	
 	\aux{cantHablantes}{m :  \TLista{$\senial$}, prof : $\ent$, freq : $\ent$, umbral : $\amplitud$, instante : $\ent$}{res : $\ent$}{
+	\newline
 	\sum_{i=0}^{|m|-1} estaHablando(m[i], instante, freq,umbral)
 	}
-	\aux{estaHablando}{s: $\senial$, freq:$\ent$, umbral : $\amplitud$}{res : $\ent$} {
+	\aux{estaHablando}{s: $\senial$, instante: $\ent$, freq:$\ent$, umbral : $\amplitud$}{res : $\ent$} {
 	\newline
-		ifThenElseFi( (\exists i : $\ent$)(\exists j : $\ent$) (0 \leq i \leq instante \leq j < |s|) \land (j-i \geq 0.1*freq) \land todosBajosEntre(s,u,j,umbral),0,1)
+		if
+		\newline
+		(\exists i : $\ent$)(\exists j : $\ent$) (0 \leq i \leq instante \leq j < |s|) \land (j-i \geq 0.1*freq) \land todosBajosEntre(s,i,j,umbral)
+		\newline
+		\textit{then 0 else 1 fi}
 	}
 	
 \end{proc}
 
 \section{Predicados y Auxiliares generales}
 
-\pred{se\~nalEsValida}{m: \TLista{$\senial$}, prof: $\ent$, freq: $\ent$}{
-	(\forall s: $\senial$)(s \in m)$\implica$(validarSe\tilde{n}al(s, prof, freq))
+\pred{se\~nalEsValidaM}{m: \TLista{$\senial$}, prof: $\ent$, freq: $\ent$}{
+	\newline
+	esMatriz(m) \land ((\forall s: $\senial$)(s \in m)$\implica$(validarSe\tilde{n}al(s, prof, freq)))
+	\newline
 }
 
-\pred{validarSe\~nal}{s: $\senial$, prof: $\ent$, freq: $\ent$}{
+\pred{se\~nalEsValidaV}{s: $\senial$, prof: $\ent$, freq: $\ent$}{
 	\newline
 	profundidadCorrecta(prof) \newline
 	\land frecuenciaCorrecta(freq) \newline
 	\land duracionDeSe\tilde{n}alCorrecta(s, freq) \newline
 	\land amplitudesDentroDelRango(s, prof) \newline
-	\land microfonoFunciona(s, freq) \newline
+	\land micr ofonoFunciona(s, freq) 
+	\newline
+}
+
+\pred {esMatriz}{m:\TLista{$\senial$}}{
+\newline		
+	((\forall i:$\ent$)(\forall j:$\ent$)(0 \leq i < |m| \implica_L |m[i]| = m[j]))
+\newline
 }
 
 \pred{profundidadCorrecta}{prof: $\ent$}{
@@ -196,12 +201,18 @@
 	(\forall amp: $\ent$)(amp \in s)$\implica$(-2^{(prof-1)} \leq amp < (2^{(prof-1)})-1 ) \newline
 }
 
-\pred{microfonoFunciona}{s: $\senial$, freq: $\ent$}{
+\pred{micr\'ofonoFunciona}{s: $\senial$, freq: $\ent$}{
 	\newline
 	\lnot((\exists i: $\ent$)(\exists j: $\ent$)((0 \leq i < j \leq |s|) \land_L ((|subseq(s, i, j)| \geq freq)\newline
 	\land (\forall k: $\ent$)(k \in subseq(s, i, j)$\implica$(k=0))))\newline
 }
 
-\section{Decisiones tomadas}
+\aux{calcIntensidadMedia}{in s: $\senial$}{\ent}{\sum_{i=0}^{|s|-1}{\frac{||s[i]||}{|s|-1}}}
+
+\pred {todosBajosEntre} {s: $\senial$, a: $\ent$, b : $\ent$, umbral : $\amplitud$}{
+\newline
+(\forall i : $\ent$)(a \leq i \leq b) \implica_L (|s[i]| < umbral) 
+\newline
+}
 
 \end{document}
